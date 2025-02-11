@@ -17,3 +17,12 @@ export function getSession() {
 
   return session;
 }
+
+export function rupiahFormat (val: number) {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(val)
+}

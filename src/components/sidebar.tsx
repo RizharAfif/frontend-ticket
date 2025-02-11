@@ -1,5 +1,6 @@
 import {
     Bell,
+    Clapperboard,
     Home,
     Package,
     Package2,
@@ -47,6 +48,14 @@ export default function Sidebar() {
                         >
                             <Theater className="h-4 w-4" />
                             Theaters{" "}
+                        </Link>
+
+                        <Link
+                            to="/admin/movies"
+                            className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+                        >
+                            <Clapperboard className="h-4 w-4" />
+                            Movie{" "}
                         </Link>
                     </nav>
                 </div>
