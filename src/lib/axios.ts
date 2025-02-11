@@ -1,9 +1,22 @@
 import axios from 'axios';
+import { getSession } from './utils';
 
+const baseUrl = import.meta.env.VITE_API_URL ?? ""
 
-
-const instance = axios.create({
-    baseURL: 'https://some-domain.com/api/',
-    timeout: 1000,
-    headers: {'X-Custom-Header': 'foobar'}
+export const globalInstance = axios.create({
+    baseURL: baseUrl,
+    timeout: 3000,
   });
+
+  export const privateInstance = axios.create({
+    baseURL: baseUrl,
+    timeout: 3000,
+  });
+
+  privateInstance.interceptors.request.use((config) => {
+    const session = getSession()
+
+    config.headers.Authorization = `JWT ${session?.token}`
+
+    return config
+  })
