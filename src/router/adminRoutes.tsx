@@ -4,8 +4,9 @@ import AdminOverview from "@/pages/AdminOverview";
 import AdminLayout from "@/components/adminLayout";
 import { getSession } from "@/lib/utils";
 import AdminGenre from "@/pages/AdminGenre";
-import { getGenres } from "@/services/genre/genre.service";
+import { getDetailGenre, getGenres } from "@/services/genre/genre.service";
 import AdminGenreForm from "@/pages/AdminGenre/form";
+import AdminTheater from "@/pages/AdminTheater";
 
 const adminRoutes: RouteObject[] = [
     {
@@ -19,7 +20,7 @@ const adminRoutes: RouteObject[] = [
             const user = getSession()
             console.log("🚀 ~ user:", user)
 
-            if(!user || user?.role !== "admin") {
+            if (!user || user?.role !== "admin") {
                 throw redirect("/admin/login")
             }
 
@@ -33,7 +34,7 @@ const adminRoutes: RouteObject[] = [
             {
                 path: "/admin/genres",
                 loader: async () => {
-                    const genres = await getGenres() 
+                    const genres = await getGenres()
 
                     return genres.data
                 },
@@ -42,6 +43,21 @@ const adminRoutes: RouteObject[] = [
             {
                 path: "/admin/genres/create",
                 element: <AdminGenreForm />
+            },
+            {
+                path: "/admin/genres/edit/:id",
+                loader: async ({ params }) => {
+                    if (!params.id) throw redirect("/admin/genres")
+
+                    const detail = await getDetailGenre(params.id)
+
+                    return detail.data
+                },
+                element: <AdminGenreForm />
+            },
+            {
+                path: "/admin/theaters",
+                element: <AdminTheater />
             }
         ]
     }

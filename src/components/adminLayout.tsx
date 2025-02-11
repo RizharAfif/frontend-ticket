@@ -1,6 +1,7 @@
 import Sidebar from "@/components/sidebar"
 import Header from "@/components/header"
 import { Outlet } from 'react-router-dom'
+import { Toaster } from "./ui/sonner"
 
 const AdminLayout = () => {
     return (
@@ -12,6 +13,7 @@ const AdminLayout = () => {
                     <Outlet />
                 </main>
             </div>
+            <Toaster />
         </div>
     )
 }

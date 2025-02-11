@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge"
 import type { Genre } from "@/services/genre/genre.type"
 import type { ColumnDef } from "@tanstack/react-table"
+import ActionColumn from "./ActionColumn"
 
 export const columns: ColumnDef<Genre>[] = [
     {
@@ -14,7 +15,7 @@ export const columns: ColumnDef<Genre>[] = [
             const genre = row.original
 
             return (
-                <div>action button</div>
+                <ActionColumn id={genre._id}/>
             )
         }
     }
