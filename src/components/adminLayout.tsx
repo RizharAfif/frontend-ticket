@@ -3,6 +3,8 @@ import Header from "@/components/header"
 import { Outlet } from 'react-router-dom'
 import { Toaster } from "./ui/sonner"
 
+import '../shadcn.css'
+
 const AdminLayout = () => {
     return (
         <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
