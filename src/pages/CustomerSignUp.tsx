@@ -1,6 +1,47 @@
-import React from 'react'
+import { cn } from '@/lib/utils'
+import { type registerValues, signUp, signUpSchema } from '@/services/auth/auth.service'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation } from '@tanstack/react-query'
+import React, { useRef } from 'react'
+import { useForm } from 'react-hook-form'
+import { Link, useNavigate } from 'react-router-dom'
 
 export default function CustomerSignUp() {
+    const { register, handleSubmit, formState: { errors }, watch, setValue } = useForm<registerValues>({
+        resolver: zodResolver(signUpSchema),
+        defaultValues: {
+            email: "",
+            name: "",
+            password: "",
+        }
+    })
+
+    const navigate = useNavigate()
+
+    const {isPending, mutateAsync} = useMutation({
+        mutationFn: (data: FormData) => signUp(data)
+    })
+
+    const inputRef = useRef<HTMLInputElement>(null)
+
+    const photo = watch("photo")
+
+    const onSubmit = async (val: registerValues) => {
+        try {
+            const formData = new FormData()
+
+            formData.append("name", val.name)
+            formData.append("email", val.email)
+            formData.append("password", val.password)
+            formData.append("photo", val.photo)
+
+            await mutateAsync(formData)
+            navigate("/sign-in")
+        } catch (error) {
+            console.log("🚀 ~ onSubmit ~ error:", error)  
+        }
+    }
+
     return (
         <div id="Content-Container" className="relative flex flex-col w-full max-w-[640px] min-h-screen mx-auto bg-[linear-gradient(179.86deg,_#000000_40.82%,_#0E0E24_99.88%)] overflow-x-hidden text-white">
             <div id="Background" className="absolute top-0 w-full h-[480px]">
@@ -8,39 +49,98 @@ export default function CustomerSignUp() {
                 <img src="/assets/images/backgrounds/signup.png" className="w-full h-full object-cover" alt="background" />
             </div>
             <img src="/assets/images/logos/logo.svg" className="relative flex max-w-[188px] mx-auto mt-[60px]" alt="logo" />
-            <form action="signin.html" className="relative flex flex-col gap-[30px] px-5 py-[60px] my-auto">
+            <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="relative flex flex-col gap-[30px] px-5 py-[60px] my-auto">
                 <h1 className="font-bold text-[26px] leading-[39px]">Sign Up</h1>
                 <div className="flex flex-col gap-4">
                     <div className="flex items-center gap-5">
                         <label className="relative flex w-[100px] h-[100px] shrink-0 rounded-full overflow-hidden bg-[#FFFFFF33] backdrop-blur-sm">
-                            <p id="Text-Label" className="w-full h-full flex items-center justify-center text-center font-semibold">
-                                Add <br />Photo
-                            </p>
-                            <img id="Avatar-Preview" src="" className="w-full h-full object-cover hidden" alt="avatar" />
-                            <input type="file" className="absolute bottom-0 -left-3/4 -z-30 opacity-0" required />
+                            <button
+                                type='button'
+                                onClick={() => inputRef?.current?.click()}
+                                id="Text-Label"
+                                className={
+                                    cn("w-full h-full flex items-center justify-center text-center font-semibold",
+                                        photo !== undefined ? "hidden" : "block")}>
+                                Add <br />
+                                Photo
+                            </button>
+                            {photo !== undefined && (
+                                <img
+                                    id="Avatar-Preview"
+                                    src={URL.createObjectURL(photo)}
+                                    className="w-full h-full object-cover"
+                                    alt="avatar"
+                                />
+                            )}
+                            <input
+                                type="file"
+                                className="absolute bottom-0 -left-3/4 -z-30 opacity-0"
+                                {...register("photo")}
+                                ref={inputRef}
+                                onChange={(e) => {
+                                    if (e.target.files) setValue("photo", e.target.files[0])
+                                }}
+                            />
                         </label>
-                        <button type="button" className="rounded-full py-2 px-3 bg-[#FFFFFF33] backdrop-blur-sm font-bold text-sm">Delete</button>
+                        <button
+                            type="button"
+                            onClick={() => setValue("photo", undefined)}
+                            className="rounded-full py-2 px-3 bg-[#FFFFFF33] backdrop-blur-sm font-bold text-sm">
+                            Delete
+                        </button>
+                        <p className='text-xs text-red-500'>{errors.photo?.message?.toString()}</p>
                     </div>
                     <label className="flex flex-col gap-2">
                         <p>Complete Name</p>
-                        <input type="text" name="" id="" className="appearance-none outline-none rounded-full py-3 px-[18px] bg-[#FFFFFF33] backdrop-blur-sm font-semibold placeholder:font-normal placeholder:text-white focus:ring-1 focus:ring-white transition-all duration-300" placeholder="What’s your name" />
+                        <input
+                            type="text"
+                            className="appearance-none outline-none rounded-full py-3 px-[18px] bg-[#FFFFFF33] 
+                        backdrop-blur-sm font-semibold placeholder:font-normal placeholder:text-white 
+                        focus:ring-1 focus:ring-white transition-all duration-300"
+                            placeholder="What’s your name"
+                            {...register("name")}
+                        />
+                        <p className='text-xs text-red-500'>{errors.name?.message}</p>
                     </label>
                     <label className="flex flex-col gap-2">
                         <p>Email Address</p>
-                        <input type="email" name="" id="" className="appearance-none outline-none rounded-full py-3 px-[18px] bg-[#FFFFFF33] backdrop-blur-sm font-semibold placeholder:font-normal placeholder:text-white focus:ring-1 focus:ring-white transition-all duration-300" placeholder="What’s your email" />
+                        <input
+                            type="email"
+                            className="appearance-none outline-none rounded-full py-3 px-[18px] bg-[#FFFFFF33] 
+                        backdrop-blur-sm font-semibold placeholder:font-normal placeholder:text-white 
+                        focus:ring-1 focus:ring-white transition-all duration-300"
+                            placeholder="What’s your email"
+                            {...register("email")}
+                        />
+                        <p className='text-xs text-red-500'>{errors.email?.message}</p>
                     </label>
                     <label className="flex flex-col gap-2">
                         <p>Password</p>
-                        <input type="password" name="" id="" className="appearance-none outline-none rounded-full py-3 px-[18px] bg-[#FFFFFF33] backdrop-blur-sm font-semibold placeholder:font-normal placeholder:text-white focus:ring-1 focus:ring-white transition-all duration-300" placeholder="Type your strong password" />
+                        <input
+                            type="password"
+                            className="appearance-none outline-none rounded-full py-3 px-[18px] bg-[#FFFFFF33] 
+                         backdrop-blur-sm font-semibold placeholder:font-normal placeholder:text-white 
+                         focus:ring-1 focus:ring-white transition-all duration-300"
+                            placeholder="Type your strong password"
+                            {...register("password")}
+                        />
+                        <p className='text-xs text-red-500'>{errors.password?.message}</p>
                     </label>
                 </div>
                 <div className="flex flex-col gap-3">
-                    <button type="submit" className="w-full rounded-full py-3 px-[18px] bg-white text-center font-bold text-premiere-black">
+                    <button 
+                    disabled={isPending}
+                    type="submit" 
+                    className="w-full rounded-full py-3 px-[18px] bg-white text-center font-bold text-premiere-black">
                         Create New Account
                     </button>
-                    <a href="signin.html" className="w-full rounded-full py-3 px-[18px] bg-white/10 text-center font-bold">
+                    <Link 
+                    to="/sign-in" 
+                    className="w-full rounded-full py-3 px-[18px] bg-white/10 text-center font-bold">
                         Sign In
-                    </a>
+                    </Link>
                 </div>
             </form>
         </div>
