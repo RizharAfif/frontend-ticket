@@ -5,9 +5,21 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import { getSession } from '@/lib/utils';
 import BottomBar from '@/components/BottomBar';
+import type { Movie } from '@/services/global/global.type';
+import type { Genre } from '@/services/genre/genre.type';
+import { useLoaderData } from 'react-router-dom';
+
+type LoaderData = {
+    movies: Movie[]
+    genres: Pick<Genre, "_id" | "name">[]
+}
 
 export default function CustomerHome() {
     const session = getSession()
+
+    const {genres, movies} = useLoaderData() as LoaderData
+
+    console.log(genres, movies)
 
     return (
         <div id="Content-Container" className="relative flex flex-col w-full max-w-[640px] min-h-screen mx-auto bg-[linear-gradient(90deg,_#000000_40.82%,_#0E0E24_99.88%)] overflow-x-hidden text-white">
